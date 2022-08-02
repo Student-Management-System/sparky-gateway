@@ -32,10 +32,13 @@ spring:
           uri: http://baeldung.com
           predicates:
             - Path=/baeldung/
+          authentication: true
         - id: sparky
           uri: http://147.172.178.30:8080/swagger-ui/index.html?configUrl=/v3/api-docs/
           predicates:
             - Path=/sparky/*
+          authentication: true
+          allowed: ROLE_ADMIN
         - id: registry
           uri: lb://registry
           predicates:
