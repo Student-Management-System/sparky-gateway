@@ -1,0 +1,66 @@
+server:
+   port: 8080
+
+spring:
+  security:
+    oauth2:
+      client:
+        provider:
+          my-keycloak-provider:
+            issuer-uri: http://localhost:8090/
+        registration:
+          keycloak-spring-gateway-client:
+            provider: my-keycloak-provider
+            client-id: sse-gateway-client
+            #client-secret: cbdf95ee-6343-4835-bd20-3c911844571b
+            authorization-grant-type: authorization_code
+            redirect-uri: '{baseUrl}/login/oauth2/code/keycloak'
+            scope: openid
+
+  application:
+    name: sse-gateway-service
+  cloud:
+    gateway:
+      discovery:
+        locator:
+          enabled: true
+      default-filters:
+        - TokenRelay=
+        - StripPrefix=1
+      routes:
+        - id: baeldung_route
+          uri: http://baeldung.com
+          predicates:
+            - Path=/baeldung/
+        - id: sparky
+          uri: http://147.172.178.30:8080/swagger-ui/index.html?configUrl=/v3/api-docs/
+          predicates:
+            - Path=/sparky/*
+        - id: registry
+          uri: lb://registry
+          predicates:
+            - Path=/registry/**
+        - id: stu-mgmt
+          uri: lb://stu-mgmt
+          predicates:
+            - Path=/stu-mgmt/**  
+
+            
+management:
+  endpoints:
+    web:
+      exposure:
+        include:
+          - mappings
+          - env
+          - health
+          - info
+          - "*"
+eureka:
+  client:
+    registerWithEureka: true
+    serviceUrl: 
+      defaultZone: ${EUREKA_SERVER:http://localhost:8761/eureka}
+    healthcheck:
+      enabled: true
+   
