@@ -38,7 +38,8 @@ spring:
           predicates:
             - Path=/sparky/*
           authentication: true
-          allowed: ROLE_ADMIN
+          allowed:
+            - ROLE_user
         - id: registry
           uri: lb://registry
           predicates:

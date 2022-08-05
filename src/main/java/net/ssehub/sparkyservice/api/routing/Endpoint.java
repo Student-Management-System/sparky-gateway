@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class Endpoint {
 
+    // TODO remove when done with testing
     @GetMapping("/check")
     public String test(Principal principal, Authentication auth) {
         return principal.getName();
