@@ -1,9 +1,0 @@
----
-spring:
-   profiles: postgres
-   datasource:
-      driverClassName: org.postgresql.Driver
-      driver-class-name: org.postgresql.Driver
-      url: jdbc:postgresql://%s/%s
-   jpa:
-      database-platform: org.hibernate.dialect.PostgreSQLDialect

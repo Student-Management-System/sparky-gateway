@@ -1,4 +1,4 @@
-package net.ssehub.sparkyservice.api.routing;
+package net.ssehub.sparky.gateway;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

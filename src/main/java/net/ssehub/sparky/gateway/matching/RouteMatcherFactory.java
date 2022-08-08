@@ -1,4 +1,4 @@
-package net.ssehub.sparkyservice.api.routing.matching;
+package net.ssehub.sparky.gateway.matching;
 
 import org.springframework.cloud.gateway.route.Route;
 import org.springframework.cloud.gateway.route.RouteLocator;

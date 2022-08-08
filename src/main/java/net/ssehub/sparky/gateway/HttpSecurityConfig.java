@@ -1,13 +1,14 @@
-package net.ssehub.sparkyservice.api.routing;
+package net.ssehub.sparky.gateway;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.web.server.ServerHttpSecurity;
 import org.springframework.security.web.server.SecurityWebFilterChain;
 
-import net.ssehub.sparkyservice.api.routing.matching.PermissionRouteMatcher;
-import net.ssehub.sparkyservice.api.routing.matching.RouteMatcherFactory;
+import net.ssehub.sparky.gateway.matching.PermissionRouteMatcher;
+import net.ssehub.sparky.gateway.matching.RouteMatcherFactory;
 
 @Configuration
 public class HttpSecurityConfig {

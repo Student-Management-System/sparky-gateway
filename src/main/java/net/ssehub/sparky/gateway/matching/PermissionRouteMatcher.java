@@ -1,4 +1,4 @@
-package net.ssehub.sparkyservice.api.routing.matching;
+package net.ssehub.sparky.gateway.matching;
 
 import org.springframework.security.web.server.util.matcher.ServerWebExchangeMatcher;
 
