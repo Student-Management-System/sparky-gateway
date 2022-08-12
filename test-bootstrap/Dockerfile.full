@@ -1,0 +1,14 @@
+FROM openjdk:17-jdk-buster
+RUN mkdir build
+WORKDIR build
+
+RUN apt-get update && apt-get install wget mvn git
+RUN wget -O registry.jar 'https://jenkins-2.sse.uni-hildesheim.de/view/Teaching/job/Teaching_Service-Registry/lastBuild/net.ssehub.sparky$registry/artifact/net.ssehub.sparky/registry/1.0.0/registry-1.0.0.jar'
+RUN git clone https://github.com/CESNET/fake-oidc-server
+RUN mvn -f fake-oidc-server/pom.xml package && mv fake-oidc-server/target/fake_oidc_server.jar oidc.jar
+RUN javac Bootstrap.java
+
+EXPOSE 8761
+EXPOSE 8090
+
+ENTRYPOINT ["java", "Bootstrap", "registry.jar", "oidc.jar"] 

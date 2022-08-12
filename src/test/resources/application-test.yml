@@ -1,0 +1,69 @@
+server:
+   port: 8080
+
+spring:
+   security:
+      oauth2:
+         client:
+            provider:
+               my-keycloak-provider:
+                  issuer-uri: http://localhost:8090/
+            registration:
+               keycloak-spring-gateway-client:
+                  provider: my-keycloak-provider
+                  client-id: sse-gateway-client
+                  #client-secret:
+                  authorization-grant-type: authorization_code
+                  redirect-uri: '{baseUrl}/login/oauth2/code/keycloak'
+                  scope: openid
+
+   application:
+      name: sse-gateway-service
+   cloud:
+      gateway:
+         discovery:
+            locator:
+               enabled: true
+         default-filters:
+         - TokenRelay=
+         - StripPrefix=1
+         routes:
+         -  id: health2
+            uri: http://localhost:8080/health
+            predicates:
+            - Path=/health2/
+            authentication: true
+         -  id: health1
+            uri: http://localhost:8080/health
+            predicates:
+            - Path=/sparky/*
+            authentication: true
+            allowed:
+            - ROLE_ADMIN
+         -  id: registry
+            uri: lb://registry
+            predicates:
+            - Path=/registry/**
+logging:
+   level:
+      org.testcontainers: INFO
+      com.github.dockerjava: WARN
+
+
+management:
+   endpoints:
+      web:
+         exposure:
+            include:
+            - mappings
+            - env
+            - health
+            - info
+            - '*'
+eureka:
+   client:
+      registerWithEureka: true
+      serviceUrl:
+         defaultZone: ${EUREKA_SERVER:http://localhost:8761/eureka}
+      healthcheck:
+         enabled: true
