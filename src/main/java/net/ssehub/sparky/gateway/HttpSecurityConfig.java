@@ -2,6 +2,7 @@ package net.ssehub.sparky.gateway;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.reactive.EnableWebFluxSecurity;
 import org.springframework.security.config.web.server.ServerHttpSecurity;
 import org.springframework.security.web.server.SecurityWebFilterChain;
@@ -10,12 +11,25 @@ import net.ssehub.sparky.gateway.matching.PermissionRouteMatcher;
 import net.ssehub.sparky.gateway.matching.RouteMatcherFactory;
 
 //@Configuration
+/**
+ * Enabled spring security which works on top of springs cloud gateway. 
+ * 
+ * @author spark
+ *
+ */
 @EnableWebFluxSecurity
 public class HttpSecurityConfig {
     
     @Autowired
     private ServerHttpSecurity http;
 
+    /**
+     * Configures the security chain. It takes account of the additional security settings for each configured
+     * route. 
+     * 
+     * @param factory
+     * @return The finished security chain
+     */
     @Bean
     public SecurityWebFilterChain springSecurityFilterChain(RouteMatcherFactory factory) {
         factory.createMatchers().collectList().block().stream().forEach(this::configureSecurityWhenNeeded);
@@ -43,9 +57,11 @@ public class HttpSecurityConfig {
 
     private void defaultEndpointConfig() {
         http.authorizeExchange()
-                .pathMatchers("/health").permitAll()
                 .pathMatchers("/check").authenticated()
-                .and().oauth2Login(); // to redirect to oauth2 login page.
+                .anyExchange().permitAll()
+                .and()
+                .cors(Customizer.withDefaults())
+                .oauth2Login(Customizer.withDefaults()); // to redirect to oauth2 login page.
     }
 
 }
