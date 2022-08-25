@@ -1,5 +1,6 @@
 package net.ssehub.sparky.gateway.matching;
 
+import org.springframework.boot.context.properties.ConfigurationPropertiesScan;
 import org.springframework.cloud.gateway.route.Route;
 import org.springframework.cloud.gateway.route.RouteLocator;
 import org.springframework.security.web.server.MatcherSecurityWebFilterChain;
@@ -17,6 +18,7 @@ import reactor.core.publisher.Mono;
  *
  */
 @Component
+@ConfigurationPropertiesScan // necessary to scan for the gatewayconfig
 public class RouteMatcherFactory {
 
     /**
@@ -37,9 +39,9 @@ public class RouteMatcherFactory {
         
         private final Route route;
         
-        private final QueryDecoratedGatewayConfig gatewayConfig;
+        private final GatewayRouteConfig gatewayConfig;
         
-        RouteConfigurationMatcher(Route route, QueryDecoratedGatewayConfig gatewayConfig) {
+        RouteConfigurationMatcher(Route route, GatewayRouteConfig gatewayConfig) {
             this.route = route;
             this.gatewayConfig = gatewayConfig;
         }
@@ -51,7 +53,7 @@ public class RouteMatcherFactory {
         
         @Override
         public String[] getNeededPermissions() {
-            return gatewayConfig.getAllowedList(route);
+            return gatewayConfig.findModel(route).map(PartialRoutesConfigModel::allowed).orElse(new String[0]);
         }
         
         @Override
@@ -70,7 +72,7 @@ public class RouteMatcherFactory {
     
     private final RouteLocator locator;
 
-    private final QueryDecoratedGatewayConfig gatewayConfig;
+    private final GatewayRouteConfig gatewayConfig;
 
     /**
      * Factory for spring security {@link MatcherSecurityWebFilterChain} which matches on 
@@ -79,7 +81,7 @@ public class RouteMatcherFactory {
      * @param locator
      * @param gatewayConfig
      */
-    public RouteMatcherFactory(RouteLocator locator, QueryDecoratedGatewayConfig gatewayConfig) {
+    public RouteMatcherFactory(RouteLocator locator, GatewayRouteConfig gatewayConfig) {
         this.locator = locator;
         this.gatewayConfig = gatewayConfig;
     }

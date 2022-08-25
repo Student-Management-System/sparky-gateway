@@ -4,34 +4,35 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.boot.context.properties.ConfigurationPropertiesScan;
 import org.springframework.cloud.gateway.route.Route;
-import org.springframework.stereotype.Component;
 
-@ConfigurationProperties(prefix = "spring.cloud.gateway")
-record GatewayRouteConfig(List<PartialRoutesConfigModel> routes) {
-}
-
+/**
+ * Configuration model for automatic property matching through spring. Contains a single entry from the configuration
+ * properties with the additional config parameters.
+ *
+ * @author spark
+ */
 record PartialRoutesConfigModel(String id, String[] allowed, boolean authentication) {
 }
 
-@Component
-@ConfigurationPropertiesScan 
-class QueryDecoratedGatewayConfig {
-
-    private final GatewayRouteConfig routeConfig;
-
-    QueryDecoratedGatewayConfig(GatewayRouteConfig routeConfig) {
-        this.routeConfig = routeConfig;
-    }
-
+/**
+ * Configuration model for automatic property matching through spring. Contains all configured spring cloud gateway
+ * routes models.
+ *
+ * @author spark
+ */
+@ConfigurationProperties(prefix = "spring.cloud.gateway")
+public record GatewayRouteConfig(List<PartialRoutesConfigModel> routes) {
+    
+    /**
+     * Search method for finding a specific config model by a spring cloud route.
+     * 
+     * @param route The route which is associated with the desired config model.
+     * @return Partial configuration model which is associated with the given route
+     */
     Optional<PartialRoutesConfigModel> findModel(Route route) {
-        return routeConfig.routes().stream()
+        return routes.stream()
                 .filter(r -> r.id().equalsIgnoreCase(route.getId()))
                 .findFirst();
-    }
-
-    String[] getAllowedList(Route route) {
-        return findModel(route).map(PartialRoutesConfigModel::allowed).orElse(new String[0]);
     }
 }
