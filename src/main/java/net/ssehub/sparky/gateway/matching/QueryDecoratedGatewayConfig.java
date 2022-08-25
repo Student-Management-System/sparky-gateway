@@ -17,21 +17,21 @@ record PartialRoutesConfigModel(String id, String[] allowed, boolean authenticat
 
 @Component
 @ConfigurationPropertiesScan 
-public class QueryDecoratedGatewayConfig {
+class QueryDecoratedGatewayConfig {
 
     private final GatewayRouteConfig routeConfig;
 
-    public QueryDecoratedGatewayConfig(GatewayRouteConfig routeConfig) {
+    QueryDecoratedGatewayConfig(GatewayRouteConfig routeConfig) {
         this.routeConfig = routeConfig;
     }
 
-    public Optional<PartialRoutesConfigModel> findModel(Route route) {
+    Optional<PartialRoutesConfigModel> findModel(Route route) {
         return routeConfig.routes().stream()
                 .filter(r -> r.id().equalsIgnoreCase(route.getId()))
                 .findFirst();
     }
 
-    public String[] getAllowedList(Route route) {
+    String[] getAllowedList(Route route) {
         return findModel(route).map(PartialRoutesConfigModel::allowed).orElse(new String[0]);
     }
 }

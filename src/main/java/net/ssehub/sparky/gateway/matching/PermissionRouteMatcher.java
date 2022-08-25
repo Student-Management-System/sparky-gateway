@@ -4,5 +4,6 @@ import org.springframework.security.web.server.util.matcher.ServerWebExchangeMat
 
 public interface PermissionRouteMatcher extends ServerWebExchangeMatcher {
     boolean needsAuthentication();
+
     String[] getNeededPermissions();
 }
