@@ -10,7 +10,6 @@ import org.springframework.security.web.server.SecurityWebFilterChain;
 import net.ssehub.sparky.gateway.matching.PermissionRouteMatcher;
 import net.ssehub.sparky.gateway.matching.RouteMatcherFactory;
 
-//@Configuration
 /**
  * Enabled spring security which works on top of springs cloud gateway. 
  * 
@@ -36,8 +35,7 @@ public class HttpSecurityConfig {
         defaultEndpointConfig();
         return http.build();
     }
-    
-    
+
     private void configureSecurityWhenNeeded(PermissionRouteMatcher routeMatcher) {
         if (routeMatcher.needsAuthentication()) {
             configureRoutePermissions(routeMatcher);
