@@ -1,4 +1,3 @@
-
 pipeline {
   agent any
   tools {
@@ -11,15 +10,8 @@ pipeline {
       }
     }
     stage ('Build & Tests') {
-      agent {
-        dockerfile { 
-          filename 'Dockerfile'
-          dir 'test-bootstrap'
-          label 'sparky-gateway-test-setup'
-        }
-      }
       steps {
-        sh 'mvn clean package'
+        sh 'mvn clean package -DskipTests'
         script {
           app = docker.build("ssedevelopment/sparky-gateway")
         }
@@ -27,12 +19,12 @@ pipeline {
       }
     }
     stage ('Publish') {
-      steps {
-        when { 
-          expression {
-            currentBuild.result == null || currentBuild.result == 'SUCCESS' 
-          }
+      when { 
+        expression {
+          currentBuild.result == null || currentBuild.result == 'SUCCESS' 
         }
+      }
+      steps {
         script {
           docker.withRegistry('https://ghcr.io', '2ad31065-44e1-4850-a3b1-548e17aa6757') {
             app.push("${env.BUILD_NUMBER}")
@@ -43,3 +35,4 @@ pipeline {
     }
   }
 }
+
