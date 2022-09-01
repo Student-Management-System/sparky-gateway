@@ -1,0 +1,36 @@
+server:
+   port: 8080
+
+eureka-ip: http://localhost:8761
+
+spring.security.oauth2.client:
+   provider:
+      my-keycloak-provider:
+         issuer-uri: http://localhost:8090/
+   registration:
+      keycloak-spring-gateway-client:
+         provider: my-keycloak-provider
+         client-id: sse-gateway-client
+         authorization-grant-type: authorization_code
+         redirect-uri: '{baseUrl}/login/oauth2/code/keycloak'
+         scope: openid
+
+spring.cloud.gateway.routes:
+-  id: free
+   uri: https://google.com
+   predicates:
+   - Path=/free/**
+-  id: user
+   uri: https://google.com
+   predicates:
+   - Path=/user/**
+   authenticated: true
+   allowed:
+   - ROLE_USER
+-  id: admin
+   uri: https://google.com
+   predicates:
+   - Path=/admin/**
+   authenticated: true
+   allowed:
+   - ROLE_ADMIN

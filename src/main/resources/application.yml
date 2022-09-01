@@ -1,24 +1,9 @@
-server:
-   port: 8080
 
 spring:
-   security:
-      oauth2:
-         client:
-            provider:
-               my-keycloak-provider:
-                  issuer-uri: http://localhost:8090/
-            registration:
-               keycloak-spring-gateway-client:
-                  provider: my-keycloak-provider
-                  client-id: sse-gateway-client
-                  #client-secret:
-                  authorization-grant-type: authorization_code
-                  redirect-uri: '{baseUrl}/login/oauth2/code/keycloak'
-                  scope: openid
-
    application:
       name: sse-gateway-service
+   main:
+      lazy-initialization: true
    cloud:
       gateway:
          discovery:
@@ -27,11 +12,11 @@ spring:
          default-filters:
            - TokenRelay=
            - StripPrefix=1
-      routes:
-        - id: registry
-          uri: lb://registry
-          predicates:
-            - Path=/registry/**
+         routes:
+           - id: registry
+             uri: lb://registry
+             predicates:
+               - Path=/registry/**
 
 management:
    endpoints:
@@ -47,6 +32,6 @@ eureka:
    client:
       registerWithEureka: true
       serviceUrl:
-         defaultZone: ${EUREKA_SERVER:http://localhost:8761/eureka}
+         defaultZone: ${eureka-ip}/eureka
       healthcheck:
          enabled: true

@@ -1,0 +1,15 @@
+server.port: 8080
+eureka-ip: ${REG_EUREKA_IP}
+
+spring.security.oauth2.client:
+   provider:
+      my-keycloak-provider:
+         issuer-uri: ${GW_OIDC_ISSUER}
+   registration:
+      keycloak-spring-gateway-client:
+         provider: my-keycloak-provider
+         client-id: ${GW_OIDC_CLIENTID}
+         client-secret: ${GW_OIDC_SECRET} 
+         authorization-grant-type: authorization_code
+         redirect-uri: '{baseUrl}/login/oauth2/code/keycloak'
+         scope: openid
