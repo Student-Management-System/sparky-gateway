@@ -1,0 +1,11 @@
+version: '3.7'
+
+services: 
+  registry:
+    image: ghcr.io/e-learning-by-sse/infrastructure-registry:latest
+    ports:
+      - 8761
+  oidc:
+    image: ghcr.io/e-learning-by-sse/infrastructure-fake-oidc:latest
+    ports:
+      - 8090

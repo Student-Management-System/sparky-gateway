@@ -7,7 +7,7 @@ spring:
          client:
             provider:
                my-keycloak-provider:
-                  issuer-uri: http://localhost:8090/
+                  # issuer-uri: http://localhost:8090/ # overwritten
             registration:
                keycloak-spring-gateway-client:
                   provider: my-keycloak-provider
@@ -64,6 +64,6 @@ eureka:
    client:
       registerWithEureka: true
       serviceUrl:
-         defaultZone: ${EUREKA_SERVER:http://localhost:8761/eureka}
+        # defaultZone: ${EUREKA_SERVER:http://localhost:8761/eureka} # overwritten
       healthcheck:
          enabled: true
