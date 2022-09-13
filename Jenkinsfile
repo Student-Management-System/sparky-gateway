@@ -1,9 +1,9 @@
 pipeline {
   agent any
   environment {
-    DOCKER_TARGET = 'ssedevelopment/sparky-gateway'
+    DOCKER_TARGET = 'e-Learning-by-SSE/infrastructure-gateway'
     DOCKER_REGISTRY = 'https://ghcr.io'
-    JENKINS_DOCKER_CREDS = '2ad31065-44e1-4850-a3b1-548e17aa6757'
+    JENKINS_DOCKER_CREDS = 'github-ssejenkins'
   }
   
   tools {
