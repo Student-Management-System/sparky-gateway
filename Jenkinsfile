@@ -2,8 +2,9 @@ pipeline {
   agent any
   environment {
     DOCKER_TARGET = 'e-Learning-by-SSE/infrastructure-gateway'
-    DOCKER_REGISTRY = 'https://ghcr.io'
+    DOCKER_REGISTRY = 'ghcr.io'
     JENKINS_DOCKER_CREDS = 'github-ssejenkins'
+    DOCKER_IMAGE_NAME = "${DOCKER_REGISTRY}/${DOCKER_TARGET}"
   }
   
   tools {
@@ -11,49 +12,29 @@ pipeline {
   }
   
   stages {
-  
-    stage ('Clone') {
-      steps {
-        checkout scm
-      }
-    }
 
-    stage ('Build & Tests') {
+    stage ('Maven') {
       steps {
-        sh 'mvn clean package'
-        script {
-          app = docker.build("${DOCKER_TARGET}")
+        withCredentials([usernamePassword(credentialsId: "${JENKINS_DOCKER_CREDS}", usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
+          sh 'mvn clean spring-boot:build-image \
+              -Ddocker.registry=https://$DOCKER_REGISTRY \
+              -Ddocker.user=$USERNAME \
+              -Ddocker.secret=$PASSWORD \
+              -Dspring-boot.build-image.publish=true
         }
         junit '**/target/surefire-reports/*.xml'
+        archiveArtifacts artifacts: '**/target/*.jar', fingerprint: true
       }
     }
 
     stage ('Analysis') {
       steps {
         jacoco()
-        archiveArtifacts artifacts: '**/target/*.jar', fingerprint: true
         script {
           def checkstyle = scanForIssues tool: [$class: 'CheckStyle'], pattern: '**/target/checkstyle-result.xml'
           publishIssues issues:[checkstyle]
         } 
       }
     }
-
-    stage ('Publish') {
-      when { 
-        expression {
-          currentBuild.result == null || currentBuild.result == 'SUCCESS' 
-        }
-      }
-      steps {
-        script {
-          docker.withRegistry("${DOCKER_REGISTRY}", "${JENKINS_DOCKER_CREDS}") {
-            app.push("${env.BUILD_NUMBER}")
-            app.push("latest")
-          }
-        }
-      }
-    }
-
   }
 }
