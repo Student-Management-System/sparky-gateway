@@ -4,7 +4,10 @@ pipeline {
     DOCKER_TARGET = 'e-Learning-by-SSE/infrastructure-gateway'
     DOCKER_REGISTRY = 'ghcr.io'
     JENKINS_DOCKER_CREDS = 'github-ssejenkins'
-    DOCKER_IMAGE_NAME = "${DOCKER_REGISTRY}/${DOCKER_TARGET}"
+    
+    GITHUB_CREDS = credentials('github-ssejenkins')
+    GITHUB_USER = '$GITHUB_CREDS_USR'
+    GITHUB_PASSWORD = '$GITHUB_CREDS_PSW'
   }
   
   tools {
@@ -15,13 +18,7 @@ pipeline {
 
     stage ('Maven') {
       steps {
-        withCredentials([usernamePassword(credentialsId: "${JENKINS_DOCKER_CREDS}", usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
-          sh 'mvn clean spring-boot:build-image \
-              -Ddocker.registry=https://$DOCKER_REGISTRY \
-              -Ddocker.user=$USERNAME \
-              -Ddocker.secret=$PASSWORD \
-              -Dspring-boot.build-image.publish=true'
-        }
+        sh 'mvn clean -s mvn-settings.xml spring-boot:build-image -Dspring-boot.build-image.publish=true'
         junit '**/target/surefire-reports/*.xml'
         archiveArtifacts artifacts: '**/target/*.jar', fingerprint: true
       }
