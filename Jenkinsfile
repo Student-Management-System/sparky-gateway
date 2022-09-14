@@ -20,7 +20,7 @@ pipeline {
               -Ddocker.registry=https://$DOCKER_REGISTRY \
               -Ddocker.user=$USERNAME \
               -Ddocker.secret=$PASSWORD \
-              -Dspring-boot.build-image.publish=true
+              -Dspring-boot.build-image.publish=true'
         }
         junit '**/target/surefire-reports/*.xml'
         archiveArtifacts artifacts: '**/target/*.jar', fingerprint: true
