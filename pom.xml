@@ -4,8 +4,7 @@
 	<parent>
 		<groupId>net.ssehub.e-learning</groupId>
 		<artifactId>infrastructure-parent</artifactId>
-		<version>0.0.1</version>
-		<relativePath /> <!-- lookup parent from repository -->
+		<version>0.2.0</version>
 	</parent>
 	<artifactId>infrastructure-gateway</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
@@ -14,6 +13,7 @@
 
 	<properties>
 		<spring-cloud.version>2021.0.3</spring-cloud.version>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
 
 	<dependencies>
