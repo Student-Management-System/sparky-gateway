@@ -1,13 +1,14 @@
 pipeline {
   agent any
   environment {
-    DOCKER_TARGET = 'e-Learning-by-SSE/infrastructure-gateway'
-    DOCKER_REGISTRY = 'ghcr.io'
-    JENKINS_DOCKER_CREDS = 'github-ssejenkins'
-    
     GITHUB_CREDS = credentials('github-ssejenkins')
     GITHUB_USER = '$GITHUB_CREDS_USR'
     GITHUB_PASSWORD = '$GITHUB_CREDS_PSW'
+    
+    DOCKER_GROUP = 'e-learning-by-sse'
+    DOCKER_REGISTRY = 'ghcr.io'
+    DOCKER_USER = '$GITHUB_CREDS_USR'
+    DOCKER_PASSWORD = '$GITHUB_CREDS_PSW'
   }
   
   tools {

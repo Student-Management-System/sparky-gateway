@@ -15,12 +15,34 @@ The project is automatically build as docker image and is released on github: [h
 
 
 ## Build & Run
-Clone repository and run: 
 
-	mvn package
-	JAR=$(ls target/sparky-gateway*.jar) && java -jar $JAR
+### First run
+We need an additional maven repository for dependency management. If you want to run the build for the first time, you have to add a github token of your account to access our github maven repository. 
+ or use our `mvn-settings.xml` to apply the needed settings. 
+In case of regular development, we recommend to apply these settings to the `~/.m2/settings.xml` (see link above).
 
-The first line will run all tests and create a jar inside the target directory. The second command will run it. 
+
+The `mvn-settings.xml` uses environment variables for github:
+
+```
+export GITHUB_USER=<username>
+export GITHUB_PASSWORD=<token>
+mvn clean -s mvn-settings.xml install
+```
+This will download the needed parent-pom. You must do this again, if you change the version of the parent project (or if you wan't to publish the project). 
+
+Note: You must provide the settings in each maven command if you don't run the `install` phase.
+
+### Latern runs:
+
+Simply run:
+
+```bash
+mvn package
+JAR=$(ls target/sparky-gateway*.jar) && java -jar $JAR
+```
+
+The first line will read pre-defined environment variables. The second line will run all tests and create a jar inside the target directory. The third command will run it. 
 For testing you must install docker. To skip tests run `mvn package -DskipITs` instead.
 
 # Development Setup
@@ -35,25 +57,31 @@ docker compose -f compose-dev.yml up -d # starting
 docker compose -f compose-dev.yml down  # stopping
 ```
 
+For a more convenient maven usage, we recommend to copy the content of the `mvn-settings.xml` to `~/.m2/settings.xml` and change environment variables to your needs. Through this you do not need to 
+set the `mvn-settings.xml` anymore. 
+
 ## Run with docker
 You can use maven to build the project with as a docker image:
 
 ```
-mvn spring-boot:build-image -Ddocker.secret=empty -Ddocker.user=empty
+mvn spring-boot:build-image
 ```
+The build results in a local image named `ghcr.io/e-learning-by-sse/infrastrcuture-gateway:0.0.1` (the tag could be different).
 
-Note: The `docker.secret` and `docker.user` must have **any** value. This is due to a configuration limitation of spring boot. If you don't wish to publish the image automatically, the 
-values of those properties can be any arbitrary placeholder.
-
-If you wish to publish the docker automatically you must provide the following settings:
+You can publish the docker image through maven as well: 
 
 ```
- mvn clean spring-boot:build-image \
-   -Ddocker.registry=https://<REGISTRY> \ 
-   -Ddocker.user=<SECRET> \
-   -Ddocker.secret=<SECRET> \
-   -Dspring-boot.build-image.publish=true'
+export DOCKER_USER=<user>
+export DOCKER_PASSWORD=<password>
+export DOCKER_REGISTRY=<registry>
+export DOCKER_GROUP=<group>
+mvn -s mvn-settings.xml spring-boot:build-image -Dspring-boot.build-image.publish=true
 ```
+
+Note: The `DOCKER_USER` and `DOCKER_PASSWORD` must always have **any** value even if you don't intend to publish the image to a docker registry. This is due to a configuration limitation of spring boot. If you don't wish to publish the image automatically, the values of those properties can be any arbitrary placeholder. The parent project pom takes care of this, as long as you don't try to override the properties in your local maven settings or via `mvn-settings.xml`. 
+
+
+If you wish to publish the docker image automatically to our group-registry you must provide the following settings:
 
 
 ## Configuration
