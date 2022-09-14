@@ -10,7 +10,6 @@ sparky-gateway is an application gateway which uses a runtime service discovery 
 - oauth2 Authorization (see Setup TODO)
 
 Pre-build jars are available on our group-jenkins: [here](https://jenkins-2.sse.uni-hildesheim.de/view/Teaching/job/Teaching_infrastructure-gateway-service/)
-
 The project is automatically build as docker image and is released on github: [here](https://github.com/orgs/e-Learning-by-SSE/packages/container/package/infrastructure-gateway)
 
 
@@ -45,7 +44,33 @@ JAR=$(ls target/sparky-gateway*.jar) && java -jar $JAR
 The first line will read pre-defined environment variables. The second line will run all tests and create a jar inside the target directory. The third command will run it. 
 For testing you must install docker. To skip tests run `mvn package -DskipITs` instead.
 
-# Development Setup
+### Run via Docker
+We provide a docker container image to run the application. The project contains a spring docker profile for a convenient configuration. 
+
+The following environment properties are available if you use the `docker` spring profile:
+- `GW_OIDC_CLIENTID`
+- `GW_OIDC_SECRET`
+- `GW_OIDC_ISSUER` 
+- `REG_EUREKA_IP` 
+
+All docker images are built with spring-boot, so you can always provide all spring properties as environment variables. Just write them in screaming snake case:
+`spring.profiles.active=docker` --> `SPRING_PROFILES_ACTIVE=docker`
+
+Docker compose sample:
+```
+version: '3.8'
+services:
+   gateway:
+      image: ghcr.io/e-learning-by-sse/infrastructure-gateway
+      environment:
+         - SPRING_PROFILES_ACTIVE=docker
+         - GW_OIDC_CLIENTID=sse-client
+         - GW_OIDC_SECRET=samplesecret
+         - GW_OIDC_ISSUER=unihi.de
+         - REG_EUREKA_IP=localhost
+```
+
+## Development Setup
 
 Use the `dev` spring profile to make a simple configuration. To use it pass the following property `-Dspring.profiles.active=dev`.
 In order to use the profile, you need a running OIDC Server on localhost:8090 and an eureka registry on localhost:8761
@@ -60,7 +85,7 @@ docker compose -f compose-dev.yml down  # stopping
 For a more convenient maven usage, we recommend to copy the content of the `mvn-settings.xml` to `~/.m2/settings.xml` and change environment variables to your needs. Through this you do not need to 
 set the `mvn-settings.xml` anymore. 
 
-## Run with docker
+### Docker Images
 You can use maven to build the project with as a docker image:
 
 ```
