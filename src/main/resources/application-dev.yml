@@ -21,16 +21,16 @@ spring.cloud.gateway.routes:
    predicates:
    - Path=/free/**
 -  id: user
-   uri: https://google.com
+   uri: lb://registry
    predicates:
    - Path=/user/**
-   authenticated: true
+   authentication: true
    allowed:
    - ROLE_USER
 -  id: admin
    uri: https://google.com
    predicates:
    - Path=/admin/**
-   authenticated: true
+   authentication: true
    allowed:
    - ROLE_ADMIN
