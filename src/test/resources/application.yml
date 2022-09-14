@@ -1,7 +1,28 @@
-server:
-   port: 8080
-
 spring:
+   cloud:
+      gateway:
+         discovery:
+            locator:
+               enabled: true
+         default-filters:
+           - TokenRelay=
+           - StripPrefix=1
+
+--- 
+spring:
+   config.activate.on-profile: eureka
+
+eureka:
+   client:
+      registerWithEureka: true
+      serviceUrl:
+        # defaultZone: ${EUREKA_SERVER:http://localhost:8761/eureka} # overwritten
+      healthcheck:
+         enabled: true
+
+--- 
+spring:
+   config.activate.on-profile: oidc
    security:
       oauth2:
          client:
@@ -17,8 +38,9 @@ spring:
                   redirect-uri: '{baseUrl}/login/oauth2/code/keycloak'
                   scope: openid
 
-   application:
-      name: sse-gateway-service
+---
+spring:
+   config.activate.on-profile: route-sample
    cloud:
       gateway:
          discovery:
@@ -44,26 +66,3 @@ spring:
             uri: lb://registry
             predicates:
             - Path=/registry/**
-logging:
-   level:
-      org.testcontainers: INFO
-      com.github.dockerjava: WARN
-
-
-management:
-   endpoints:
-      web:
-         exposure:
-            include:
-            - mappings
-            - env
-            - health
-            - info
-            - '*'
-eureka:
-   client:
-      registerWithEureka: true
-      serviceUrl:
-        # defaultZone: ${EUREKA_SERVER:http://localhost:8761/eureka} # overwritten
-      healthcheck:
-         enabled: true

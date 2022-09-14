@@ -2,8 +2,6 @@
 spring:
    application:
       name: sse-gateway-service
-   main:
-      lazy-initialization: true
    cloud:
       gateway:
          discovery:
@@ -30,7 +28,7 @@ management:
             - '*'
 eureka:
    client:
-      registerWithEureka: true
+      registerWithEureka: false
       serviceUrl:
          defaultZone: ${eureka-ip}/eureka
       healthcheck:

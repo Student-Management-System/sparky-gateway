@@ -1,11 +1,11 @@
-version: '3.7'
+version: '3.8'
 
 services: 
   registry:
-    image: ghcr.io/e-learning-by-sse/infrastructure-registry:latest
-    ports:
-      - 8761
+    image: ghcr.io/e-learning-by-sse/infrastructure-registry:1.1.0
+    environment:
+       # Enable registration through localhost not through docker!
+       - EUREKA_INSTANCE_PREFER-IP-ADDRESS=true
+       - EUREKA_INSTANCE_IP-ADDRESS=127.0.0.1
   oidc:
     image: ghcr.io/e-learning-by-sse/infrastructure-fake-oidc:latest
-    ports:
-      - 8090

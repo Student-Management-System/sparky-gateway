@@ -16,6 +16,10 @@ public class TestDockerEnvironment {
     private static final String OIDC_SERVICE_NAME = "oidc";
     private static final String REGISTRY_SERVICE_NAME = "registry";
 
+    /**
+     * The container environment for full test compose.
+     * Per default the containers aren't running.
+     */
     public static final DockerComposeContainer<?> DOCKER_COMPOSE_CONTAINER = new DockerComposeContainer<>(
             new File("src/test/resources/compose-test.yml"))
                     .withExposedService(OIDC_SERVICE_NAME, OIDC_EXPOSED_PORT)
