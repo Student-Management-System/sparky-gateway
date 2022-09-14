@@ -1,4 +1,4 @@
-package net.ssehub.sparky.gateway.matching;
+package net.ssehub.e_learning.gateway.matching;
 
 import java.util.List;
 import java.util.Optional;

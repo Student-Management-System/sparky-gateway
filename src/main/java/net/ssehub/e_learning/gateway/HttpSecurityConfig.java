@@ -1,4 +1,4 @@
-package net.ssehub.sparky.gateway;
+package net.ssehub.e_learning.gateway;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -7,8 +7,8 @@ import org.springframework.security.config.annotation.web.reactive.EnableWebFlux
 import org.springframework.security.config.web.server.ServerHttpSecurity;
 import org.springframework.security.web.server.SecurityWebFilterChain;
 
-import net.ssehub.sparky.gateway.matching.PermissionRouteMatcher;
-import net.ssehub.sparky.gateway.matching.RouteMatcherFactory;
+import net.ssehub.e_learning.gateway.matching.PermissionRouteMatcher;
+import net.ssehub.e_learning.gateway.matching.RouteMatcherFactory;
 
 /**
  * Enabled spring security which works on top of springs cloud gateway. 

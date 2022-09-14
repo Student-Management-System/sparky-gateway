@@ -1,4 +1,4 @@
-package net.ssehub.sparky.gateway;
+package net.ssehub.e_learning.gateway;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
