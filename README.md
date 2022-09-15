@@ -48,11 +48,12 @@ For testing you must install docker. To skip tests run `mvn package -DskipITs` i
 We provide a docker container image to run the application. The project contains a spring docker profile for a convenient configuration. 
 
 The following environment properties are available if you use the `docker` spring profile:
-- `GW_OIDC_CLIENTID`
-- `GW_OIDC_SECRET`
-- `GW_OIDC_ISSUER` 
-- `REG_EUREKA_IP` 
+- `GW_OIDC_ISSUER` OIDC Server which is used for authentication
+- `GW_OIDC_CLIENTID` Client ID for the OIDC Server for the authorization flow
+- `GW_OIDC_SECRET` Secret for the Client ID uses for the authorization flow
+- `REG_EUREKA_IP` The IP for the eureka registry which is used for runtime service lookup
 
+To use this you must set `SPRING_PROFILES_ACTIVE=docker` as environment. 
 All docker images are built with spring-boot, so you can always provide all spring properties as environment variables. Just write them in screaming snake case:
 `spring.profiles.active=docker` --> `SPRING_PROFILES_ACTIVE=docker`
 
@@ -61,29 +62,44 @@ Docker compose sample:
 version: '3.8'
 services:
    gateway:
-      image: ghcr.io/e-learning-by-sse/infrastructure-gateway
+      image: ghcr.io/e-learning-by-sse/infrastructure-gateway:latest
       environment:
-         - SPRING_PROFILES_ACTIVE=docker
-         - GW_OIDC_CLIENTID=sse-client
-         - GW_OIDC_SECRET=samplesecret
-         - GW_OIDC_ISSUER=unihi.de
-         - REG_EUREKA_IP=localhost
+         SPRING_PROFILES_ACTIVE: docker
+         GW_OIDC_CLIENTID: sse-client
+         GW_OIDC_SECRET: samplesecret
+         GW_OIDC_ISSUER: unihi.de
+         REG_EUREKA_IP: localhost
+```
+
+To provide a application configuration (see Configuration section) mount an application profile into the containers under the /workspace directory.<br/> 
+Example for docker-compose: 
+```
+version: '3.8'
+services:
+  gateway:
+    image: ghcr.io/e-learning-by-sse/infrastructure-gateway:latest
+    environment:
+      SPRING_PROFILES_ACTIVE: prod
+    volumes:
+      - ./application-prod.yml:/workspace/application-prod.yml
 ```
 
 ## Development Setup
 
-Use the `dev` spring profile to make a simple configuration. To use it pass the following property `-Dspring.profiles.active=dev`.
-In order to use the profile, you need a running OIDC Server on localhost:8090 and an eureka registry on localhost:8761
+**Spring Dev Profile:**<br/>
+Use the `dev` spring profile to make a simple configuration. To use it pass the following property `-Dspring.profiles.active=dev` (for example in eclipse as run Configuration).
 
-If you don't need modifications on those services, you can use the `compose-dev.yml` with docker compose to provide a simple setup. For this run: 
+**Service Setup:**<br/>
+In order to use the profile, you need a running OIDC Server on localhost:8090 and an eureka registry on localhost:8761 If you don't need modifications on those services, you can use the `compose-dev.yml` with docker compose to provide a simple setup. For this run: 
 
 ```
 docker compose -f compose-dev.yml up -d # starting
 docker compose -f compose-dev.yml down  # stopping
 ```
 
+**Permanent Maven Settings:**<br/>
 For a more convenient maven usage, we recommend to copy the content of the `mvn-settings.xml` to `~/.m2/settings.xml` and change environment variables to your needs. Through this you do not need to 
-set the `mvn-settings.xml` anymore. 
+set the `mvn-settings.xml` and don't need to use environment variables.
 
 ### Docker Images
 You can use maven to build the project with as a docker image:
@@ -138,12 +154,12 @@ In order to create a new target for routing:
 ```
 spring:
   cloud:
-	  gateway:
-	     routes:
-	       - id: stmgmt # is not visible to any user
-	       	uri: lb://servicename # redirect target - 
-	       	predicates: # list which determines that a request should routed to the target
-	       	  - Path=/stmgmt/** # /** for ignoring trailing slash
+    gateway:
+      routes:
+        - id: stmgmt # is not visible to any user
+          uri: lb://servicename # redirect target - 
+          predicates: # list which determines that a request should routed to the target
+            - Path=/stmgmt/** # /** for ignoring trailing slash
 	       	authentication: true # optional; default false
 	       	allowed: ROLE_stmgmt # optional; default empty	
 ```
@@ -160,36 +176,39 @@ Sparkyservice had three main application areas, service registry, application ro
 - runtime-registry (https://github.com/Student-Management-System/runtime-registry) as service registry with runtime discovery
 
 
+**For Service Developers:**
+
+You need to register your service at the service registry in order to use the application gateway.
+Please read the full infrastructure description found here TODO. There you find information about the new authentication service which replaced the auth functions of sparkyservice.
+
+
 **For Administrators:**
 
 This section shows the **routing and permission configuration** inside the application.yml. 
 
 Before:
-
-	zuul.routing.stmgmt.url=http://example.com
-	zuul.routes.stmgmt.acl = test@MEMORY,test1@LDAP
+```
+zuul.routing.stmgmt.url=http://example.com
+zuul.routes.stmgmt.acl = test@MEMORY,test1@LDAP
+```
 
 This is not exactly possible anymore. The account support was dropped . Now you need to create a role and assign it
 to the users which are allowed to access the resource. 
 
 Now: 
-
-	spring:
-	  cloud:
-		  gateway:
-		     routes:
-		       - id: stmgmt
-		       	uri: http://example.com
-		       	predicates:
-		       	  - Path=/stmgmt/**
-		       	authentication: true
-		       	allowed: ROLE_stmgmt
+```
+spring:
+  cloud:
+  gateway:
+    routes:
+      - id: stmgmt
+        uri: http://example.com
+        predicates:
+          - Path=/stmgmt/**
+          authentication: true
+          allowed: ROLE_stmgmt
+```
 
 When `authentication` is set but not `allowed`, then anyone which is authenticated can access the resource. 
 	
 See [Spring Cloud Configuration](https://cloud.spring.io/spring-cloud-gateway/multi/multi__configuration.html) for more information.
-
-**For Service Developers:**
-
-You need to register your service at the service registry in order to use the application gateway.
-Please read the full infrastructure description found here TODO. There you find information about the new authentication service which replaced the auth functions of sparkyservice.
