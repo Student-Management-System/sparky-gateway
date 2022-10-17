@@ -32,7 +32,7 @@ This will download the needed parent-pom. You must do this again, if you change 
 
 Note: You must provide the settings in each maven command if you don't run the `install` phase.
 
-### Latern runs:
+### Later runs:
 
 Simply run:
 
@@ -127,6 +127,8 @@ If you wish to publish the docker image automatically to our group-registry you 
 
 ## Configuration
 
+**For production it is recommended to use the provided docker image. The necessary configuration setup is decreased through the usage of the `docker` spring profile. Have a look at the "Run with Docker" section.**
+
 Configure the oauth2 connection (replace the < > content):
 
 ```
@@ -156,12 +158,12 @@ spring:
   cloud:
     gateway:
       routes:
-        - id: stmgmt # is not visible to any user
-          uri: lb://servicename # redirect target - 
-          predicates: # list which determines that a request should routed to the target
-            - Path=/stmgmt/** # /** for ignoring trailing slash
-	       	authentication: true # optional; default false
-	       	allowed: ROLE_stmgmt # optional; default empty	
+        - id: stmgmt               # is not visible to any user
+          uri: lb://servicename    # redirect target - 
+          predicates:              # list which determines that a request should routed to the target
+            - Path=/stmgmt/**      # /** for ignoring trailing slash
+          authentication: true     # optional; default false
+          allowed: ROLE_stmgmt     # optional; default empty	
 ```
 
 In order to use the eureka registry lookup, you simple use `lb://` URI to specify a ressource location. For example, `lb://stmgmt` would search for a service which registered itself with the "stmgmt" name. 
