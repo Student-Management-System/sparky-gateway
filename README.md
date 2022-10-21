@@ -44,37 +44,33 @@ JAR=$(ls target/sparky-gateway*.jar) && java -jar $JAR
 The first line will read pre-defined environment variables. The second line will run all tests and create a jar inside the target directory. The third command will run it. 
 For testing you must install docker. To skip tests run `mvn package -DskipITs` instead.
 
-### Run via Docker
-We provide a docker container image to run the application. The project contains a spring docker profile for a convenient configuration. 
+## Run via Docker
+We provide a docker container image to run the application.
 
-The following environment properties are available if you use the `docker` spring profile:
+### Container Configuration
+
+**Spring properties:**<br/>
+All docker images are built with spring-boot, so you can always provide all spring properties as environment variables. Just write them in snake case:
+`spring.profiles.active=docker` --> `SPRING_PROFILES_ACTIVE=docker`
+
+> Note: In case you use screaming snake case, all camel case words can be separated with hyphens e.g. `eureka.client.defaultZone` becomes `EUREKA_CLIENT_DEFAULT-ZONE`
+
+**Docker profile:**<br/>
+The project contains a spring docker profile for a convenient configuration. The following environment properties are available if you use the `docker` spring profile:
 - `GW_OIDC_ISSUER` OIDC Server which is used for authentication
 - `GW_OIDC_CLIENTID` Client ID for the OIDC Server for the authorization flow
 - `GW_OIDC_SECRET` Secret for the Client ID uses for the authorization flow
 - `GW_EUREKA_ZONE` The IP for the eureka registry which is used for runtime service lookup
 
-To use this you must set `SPRING_PROFILES_ACTIVE=docker` as environment. 
-All docker images are built with spring-boot, so you can always provide all spring properties as environment variables. Just write them in screaming snake case:
-`spring.profiles.active=docker` --> `SPRING_PROFILES_ACTIVE=docker`
+To use this you must set `SPRING_PROFILES_ACTIVE=docker` as environment.
 
-Docker compose sample:
+**Providing additional application:**<br/>
+In a lot of cases it is way easier to just provide a whole application.yml to provide spring configurations instead of using the docker compose environments. This is especially helpful when dealing with route configuration (see Configuration section below). 
+For this you can make use of docker volumes. Every file which is mounted into the /workspace directory inside the container is available. 
+For example create a file with the name `./application-prod.yml` relative the compose file. Then mount it to the /workspace directory and enable the `prod` profile in spring. <br>
+Example:
 ```
-version: '3.8'
-services:
-   gateway:
-      image: ghcr.io/e-learning-by-sse/infrastructure-gateway:latest
-      environment:
-         SPRING_PROFILES_ACTIVE: docker
-         GW_OIDC_CLIENTID: sse-client
-         GW_OIDC_SECRET: samplesecret
-         GW_OIDC_ISSUER: unihi.de
-         GW_EUREKA_ZONE: localhost
-```
-
-To provide a application configuration (see Configuration section) mount an application profile into the containers under the /workspace directory.<br/> 
-Example for docker-compose: 
-```
-version: '3.8'
+version: '3.9'
 services:
   gateway:
     image: ghcr.io/e-learning-by-sse/infrastructure-gateway:latest
@@ -84,46 +80,20 @@ services:
       - ./application-prod.yml:/workspace/application-prod.yml
 ```
 
-## Development Setup
-
-**Spring Dev Profile:**<br/>
-Use the `dev` spring profile to make a simple configuration. To use it pass the following property `-Dspring.profiles.active=dev` (for example in eclipse as run Configuration).
-
-**Service Setup:**<br/>
-In order to use the profile, you need a running OIDC Server on localhost:8090 and an eureka registry on localhost:8761 If you don't need modifications on those services, you can use the `compose-dev.yml` with docker compose to provide a simple setup. For this run: 
-
+### Run with Docker
+**Docker compose example**:<br/>
 ```
-docker compose -f compose-dev.yml up -d # starting
-docker compose -f compose-dev.yml down  # stopping
+version: '3.9'
+services:
+   gateway:
+      image: ghcr.io/e-learning-by-sse/infrastructure-gateway:latest
+      environment:
+         SPRING_PROFILES_ACTIVE: docker
+         GW_OIDC_CLIENTID: sse-client
+         GW_OIDC_SECRET: samplesecret
+         GW_OIDC_ISSUER: unihi.de
+         GW_EUREKA_ZONE: localhost:8761/eureka
 ```
-
-**Permanent Maven Settings:**<br/>
-For a more convenient maven usage, we recommend to copy the content of the `mvn-settings.xml` to `~/.m2/settings.xml` and change environment variables to your needs. Through this you do not need to 
-set the `mvn-settings.xml` and don't need to use environment variables.
-
-### Docker Images
-You can use maven to build the project with as a docker image:
-
-```
-mvn spring-boot:build-image
-```
-The build results in a local image named `ghcr.io/e-learning-by-sse/infrastrcuture-gateway:0.0.1` (the tag could be different).
-
-You can publish the docker image through maven as well: 
-
-```
-export DOCKER_USER=<user>
-export DOCKER_PASSWORD=<password>
-export DOCKER_REGISTRY=<registry>
-export DOCKER_GROUP=<group>
-mvn -s mvn-settings.xml spring-boot:build-image -Dspring-boot.build-image.publish=true
-```
-
-Note: The `DOCKER_USER` and `DOCKER_PASSWORD` must always have **any** value even if you don't intend to publish the image to a docker registry. This is due to a configuration limitation of spring boot. If you don't wish to publish the image automatically, the values of those properties can be any arbitrary placeholder. The parent project pom takes care of this, as long as you don't try to override the properties in your local maven settings or via `mvn-settings.xml`. 
-
-
-If you wish to publish the docker image automatically to our group-registry you must provide the following settings:
-
 
 ## Configuration
 
@@ -171,6 +141,46 @@ In order to use the eureka registry lookup, you simple use `lb://` URI to specif
 See [the spring security documentation](https://spring.io/projects/spring-security) for security settings related to oauth2/oidc and [spring cloud gateway reference guide](https://docs.spring.io/spring-cloud-gateway/docs/current/reference/html/) for spring cloud gateway settings.
 
 To set the used eureka instance you have to set `eureka-zone` to the used eureka default zone (which is typically `http://<ip>:<port>/eureka`).
+
+## Development Setup
+
+**Spring Dev Profile:**<br/>
+Use the `dev` spring profile to make a simple configuration. To use it pass the following property `-Dspring.profiles.active=dev` (for example in eclipse as run Configuration).
+
+**Service Setup:**<br/>
+In order to use the profile, you need a running OIDC Server on localhost:8090 and an eureka registry on localhost:8761 If you don't need modifications on those services, you can use the `compose-dev.yml` with docker compose to provide a simple setup. For this run: 
+
+```
+docker compose -f compose-dev.yml up -d # starting
+docker compose -f compose-dev.yml down  # stopping
+```
+
+**Permanent Maven Settings:**<br/>
+For a more convenient maven usage, we recommend to copy the content of the `mvn-settings.xml` to `~/.m2/settings.xml` and change environment variables to your needs. Through this you do not need to 
+set the `mvn-settings.xml` and don't need to use environment variables.
+
+### Building images
+You can use maven to build the project with as a docker image:
+
+```
+mvn spring-boot:build-image
+```
+The build results in a local image named `ghcr.io/e-learning-by-sse/infrastrcuture-gateway:0.0.1` (the tag could be different).
+
+You can publish the docker image through maven as well: 
+
+```
+export DOCKER_USER=<user>
+export DOCKER_PASSWORD=<password>
+export DOCKER_REGISTRY=<registry>
+export DOCKER_GROUP=<group>
+mvn -s mvn-settings.xml spring-boot:build-image -Dspring-boot.build-image.publish=true
+```
+
+Note: The `DOCKER_USER` and `DOCKER_PASSWORD` must always have **any** value even if you don't intend to publish the image to a docker registry. This is due to a configuration limitation of spring boot. If you don't wish to publish the image automatically, the values of those properties can be any arbitrary placeholder. The parent project pom takes care of this, as long as you don't try to override the properties in your local maven settings or via `mvn-settings.xml`. 
+
+
+If you wish to publish the docker image automatically to our group-registry you must provide the following settings:
 
 ## Migration from Sparkyservice
 Sparkyservice had three main application areas, service registry, application routing with access management for specified routes and user management. Those features were seperated in different projects
