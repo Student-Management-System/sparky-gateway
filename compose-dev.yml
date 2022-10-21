@@ -2,11 +2,26 @@ version: '3.8'
 
 services: 
   registry:
-    image: ghcr.io/e-learning-by-sse/infrastructure-registry:1.1.0
+    hostname: reg
+    image: ghcr.io/e-learning-by-sse/infrastructure-registry:unstable
     environment:
        # Enable registration through localhost not through docker!
        - EUREKA_INSTANCE_PREFER-IP-ADDRESS=true
        - EUREKA_INSTANCE_IP-ADDRESS=127.0.0.1
+       - spring_application_name=registry
+       - info_application_mode=docker
+       - eureka_instance_hostname=localhost:8080
+       - eureka-zone=http://localhost:8761/eureka
+       #- SERVER_FORWARD-HEADERS-STRATEGY=NATIVE
+       #- server_servlet_context-path=/registry
+       #- server_use-forward-headers=true
+       #- eureka_client_serviceUrl_defaultZone=http://localhost:8761/registry/eureka
+       #- eureka_dashboard_path=/registry   
+       #- eureka_eurekaServer_context=/registry
+       #- eureka_client_eurekaServerUrlContext=/registry
+       #- eureka_client_fetchRegistry=true
+       #- logging_level_com_netflix_discovery_DiscoveryClient=DEBUG
+       #- logging_level_root=DEBUG
     ports:
        - 8761:8761
   oidc:

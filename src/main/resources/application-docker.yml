@@ -1,5 +1,5 @@
 server.port: 8080
-eureka-ip: ${REG_EUREKA_IP}
+eureka-zone: ${GW_EUREKA_ZONE}
 
 spring.security.oauth2.client:
    provider:

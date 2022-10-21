@@ -51,7 +51,7 @@ The following environment properties are available if you use the `docker` sprin
 - `GW_OIDC_ISSUER` OIDC Server which is used for authentication
 - `GW_OIDC_CLIENTID` Client ID for the OIDC Server for the authorization flow
 - `GW_OIDC_SECRET` Secret for the Client ID uses for the authorization flow
-- `REG_EUREKA_IP` The IP for the eureka registry which is used for runtime service lookup
+- `GW_EUREKA_ZONE` The IP for the eureka registry which is used for runtime service lookup
 
 To use this you must set `SPRING_PROFILES_ACTIVE=docker` as environment. 
 All docker images are built with spring-boot, so you can always provide all spring properties as environment variables. Just write them in screaming snake case:
@@ -68,7 +68,7 @@ services:
          GW_OIDC_CLIENTID: sse-client
          GW_OIDC_SECRET: samplesecret
          GW_OIDC_ISSUER: unihi.de
-         REG_EUREKA_IP: localhost
+         GW_EUREKA_ZONE: localhost
 ```
 
 To provide a application configuration (see Configuration section) mount an application profile into the containers under the /workspace directory.<br/> 
@@ -169,6 +169,8 @@ spring:
 In order to use the eureka registry lookup, you simple use `lb://` URI to specify a ressource location. For example, `lb://stmgmt` would search for a service which registered itself with the "stmgmt" name. 
 
 See [the spring security documentation](https://spring.io/projects/spring-security) for security settings related to oauth2/oidc and [spring cloud gateway reference guide](https://docs.spring.io/spring-cloud-gateway/docs/current/reference/html/) for spring cloud gateway settings.
+
+To set the used eureka instance you have to set `eureka-zone` to the used eureka default zone (which is typically `http://<ip>:<port>/eureka`).
 
 ## Migration from Sparkyservice
 Sparkyservice had three main application areas, service registry, application routing with access management for specified routes and user management. Those features were seperated in different projects

@@ -1,7 +1,7 @@
 server:
    port: 8080
 
-eureka-ip: http://localhost:8761
+eureka-zone: http://localhost:8761/eureka
 
 spring.security.oauth2.client:
    provider:
@@ -16,12 +16,17 @@ spring.security.oauth2.client:
          scope: openid
 
 spring.cloud.gateway.routes:
+
+-  id: eureka
+   uri: lb://registry/eureka/
+   predicates:
+   - Path=/eureka/**
 -  id: free
    uri: https://google.com
    predicates:
    - Path=/free/**
 -  id: user
-   uri: lb://registry
+   uri: https://google.com
    predicates:
    - Path=/user/**
    authentication: true
