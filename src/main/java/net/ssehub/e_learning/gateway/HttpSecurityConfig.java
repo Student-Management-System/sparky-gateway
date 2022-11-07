@@ -33,7 +33,7 @@ public class HttpSecurityConfig {
     public SecurityWebFilterChain springSecurityFilterChain(RouteMatcherFactory factory) {
         factory.createMatchers().collectList().block().stream().forEach(this::configureSecurityWhenNeeded);
         defaultEndpointConfig();
-        return http.build();
+        return http.csrf().disable().build();
     }
 
     private void configureSecurityWhenNeeded(PermissionRouteMatcher routeMatcher) {
