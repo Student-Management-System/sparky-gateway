@@ -23,10 +23,10 @@ In case of regular development, we recommend to apply these settings to the `~/.
 
 The `mvn-settings.xml` uses environment variables for github:
 
-```
-export GITHUB_USER=<username>
-export GITHUB_PASSWORD=<token>
-mvn clean -s mvn-settings.xml install
+```console
+$ export GITHUB_USER=<username>
+$ export GITHUB_PASSWORD=<token>
+$ mvn clean -s mvn-settings.xml install
 ```
 This will download the needed parent-pom. You must do this again, if you change the version of the parent project (or if you wan't to publish the project). 
 
@@ -36,9 +36,9 @@ Note: You must provide the settings in each maven command if you don't run the `
 
 Simply run:
 
-```bash
-mvn package
-JAR=$(ls target/sparky-gateway*.jar) && java -jar $JAR
+```console
+$ mvn package
+$ JAR=$(ls target/sparky-gateway*.jar) && java -jar $JAR
 ```
 
 The first line will read pre-defined environment variables. The second line will run all tests and create a jar inside the target directory. The third command will run it. 
@@ -69,7 +69,7 @@ In a lot of cases it is way easier to just provide a whole application.yml to pr
 For this you can make use of docker volumes. Every file which is mounted into the /workspace directory inside the container is available. 
 For example create a file with the name `./application-prod.yml` relative the compose file. Then mount it to the /workspace directory and enable the `prod` profile in spring. <br>
 Example:
-```
+```yaml
 version: '3.9'
 services:
   gateway:
@@ -82,7 +82,7 @@ services:
 
 ### Run with Docker
 **Docker compose example**:<br/>
-```
+```yaml
 version: '3.9'
 services:
    gateway:
@@ -101,7 +101,7 @@ services:
 
 Configure the oauth2 connection (replace the < > content):
 
-```
+```yaml
 spring:
   security:
     oauth2:
@@ -123,7 +123,7 @@ spring:
 
 In order to create a new target for routing:
 
-```
+```yaml
 spring:
   cloud:
     gateway:
@@ -150,9 +150,9 @@ Use the `dev` spring profile to make a simple configuration. To use it pass the 
 **Service Setup:**<br/>
 In order to use the profile, you need a running OIDC Server on localhost:8090 and an eureka registry on localhost:8761 If you don't need modifications on those services, you can use the `compose-dev.yml` with docker compose to provide a simple setup. For this run: 
 
-```
-docker compose -f compose-dev.yml up -d # starting
-docker compose -f compose-dev.yml down  # stopping
+```console
+$ docker compose -f compose-dev.yml up -d # starting
+$ docker compose -f compose-dev.yml down  # stopping
 ```
 
 **Permanent Maven Settings:**<br/>
@@ -162,19 +162,19 @@ set the `mvn-settings.xml` and don't need to use environment variables.
 ### Building images
 You can use maven to build the project with as a docker image:
 
-```
-mvn spring-boot:build-image
+```console
+$ mvn spring-boot:build-image
 ```
 The build results in a local image named `ghcr.io/e-learning-by-sse/infrastrcuture-gateway:0.0.1` (the tag could be different).
 
 You can publish the docker image through maven as well: 
 
-```
-export DOCKER_USER=<user>
-export DOCKER_PASSWORD=<password>
-export DOCKER_REGISTRY=<registry>
-export DOCKER_GROUP=<group>
-mvn -s mvn-settings.xml spring-boot:build-image -Dspring-boot.build-image.publish=true
+```console
+$ export DOCKER_USER=<user>
+$ export DOCKER_PASSWORD=<password>
+$ export DOCKER_REGISTRY=<registry>
+$ export DOCKER_GROUP=<group>
+$ mvn -s mvn-settings.xml spring-boot:build-image -Dspring-boot.build-image.publish=true
 ```
 
 Note: The `DOCKER_USER` and `DOCKER_PASSWORD` must always have **any** value even if you don't intend to publish the image to a docker registry. This is due to a configuration limitation of spring boot. If you don't wish to publish the image automatically, the values of those properties can be any arbitrary placeholder. The parent project pom takes care of this, as long as you don't try to override the properties in your local maven settings or via `mvn-settings.xml`. 
@@ -201,7 +201,7 @@ Please read the full infrastructure description found here TODO. There you find 
 This section shows the **routing and permission configuration** inside the application.yml. 
 
 Before:
-```
+```.properties
 zuul.routing.stmgmt.url=http://example.com
 zuul.routes.stmgmt.acl = test@MEMORY,test1@LDAP
 ```
@@ -210,7 +210,7 @@ This is not exactly possible anymore. The account support was dropped . Now you 
 to the users which are allowed to access the resource. 
 
 Now: 
-```
+```yaml
 spring:
   cloud:
   gateway:
