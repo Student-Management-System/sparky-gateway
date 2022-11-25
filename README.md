@@ -202,7 +202,7 @@ This section shows the **routing and permission configuration** inside the appli
 
 Before:
 ```.properties
-zuul.routing.stmgmt.url=http://example.com
+zuul.routing.stmgmt.url = http://example.com
 zuul.routes.stmgmt.acl = test@MEMORY,test1@LDAP
 ```
 
@@ -219,8 +219,8 @@ spring:
         uri: http://example.com
         predicates:
           - Path=/stmgmt/**
-          authentication: true
-          allowed: ROLE_stmgmt
+        authentication: true
+        allowed: ROLE_stmgmt
 ```
 
 When `authentication` is set but not `allowed`, then anyone which is authenticated can access the resource. 
