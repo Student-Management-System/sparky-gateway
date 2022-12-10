@@ -19,7 +19,7 @@ pipeline {
     stage ('Maven') {
       steps {
         sh 'mvn clean -s mvn-settings.xml spring-boot:build-image -Dspring-boot.build-image.publish=true'
-        junit '**/target/surefire-reports/*.xml'
+        //junit '**/target/surefire-reports/*.xml'
         archiveArtifacts artifacts: '**/target/*.jar', fingerprint: true
       }
     }
