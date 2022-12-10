@@ -1,18 +1,17 @@
 pipeline {
-  agent any
+  agent {
+    label 'maven && docker && jdk17'
+  }
+  
   environment {
     GITHUB_CREDS = credentials('github-ssejenkins')
-    GITHUB_USER = '$GITHUB_CREDS_USR'
-    GITHUB_PASSWORD = '$GITHUB_CREDS_PSW'
+    GITHUB_USER = '${GITHUB_CREDS_USR}'
+    GITHUB_PASSWORD = '${GITHUB_CREDS_PSW}'
     
     DOCKER_GROUP = 'e-learning-by-sse'
     DOCKER_REGISTRY = 'ghcr.io'
-    DOCKER_USER = '$GITHUB_CREDS_USR'
-    DOCKER_PASSWORD = '$GITHUB_CREDS_PSW'
-  }
-  
-  tools {
-    maven 'Maven 3.8.6' 
+    DOCKER_USER = '${GITHUB_CREDS_USR}'
+    DOCKER_PASSWORD = '${GITHUB_CREDS_PSW}'
   }
   
   stages {
