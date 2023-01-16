@@ -1,13 +1,16 @@
 pipeline {
   agent {
-    label 'maven && docker && jdk17'
+    docker {
+      image 'maven:3.8-eclipse-temurin-17'
+      label 'docker'
+    }
   }
   
   stages {
     stage ('Maven') {
       steps {
         withMaven(mavenSettingsConfig: 'mvn-elearn-repo-settings') {
-          sh 'mvn clean spring-boot:build-image -Dspring-boot.build-image.publish=true'
+          sh '$MVN_CMD clean spring-boot:build-image -Dspring-boot.build-image.publish=true'
         }
         archiveArtifacts artifacts: '**/target/*.jar', fingerprint: true
       }
