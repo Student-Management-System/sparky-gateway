@@ -3,23 +3,12 @@ pipeline {
     label 'maven && docker && jdk17'
   }
   
-  environment {
-    GITHUB_CREDS = credentials('github-ssejenkins')
-    GITHUB_USER = '${GITHUB_CREDS_USR}'
-    GITHUB_PASSWORD = '${GITHUB_CREDS_PSW}'
-    
-    DOCKER_GROUP = 'e-learning-by-sse'
-    DOCKER_REGISTRY = 'ghcr.io'
-    DOCKER_USER = '${GITHUB_CREDS_USR}'
-    DOCKER_PASSWORD = '${GITHUB_CREDS_PSW}'
-  }
-  
   stages {
-
     stage ('Maven') {
       steps {
-        sh 'mvn clean -s mvn-settings.xml spring-boot:build-image -Dspring-boot.build-image.publish=true'
-        //junit '**/target/surefire-reports/*.xml'
+        withMaven(mavenSettingsConfig: 'mvn-elearn-repo-settings') {
+          sh 'mvn clean spring-boot:build-image -Dspring-boot.build-image.publish=true'
+        }
         archiveArtifacts artifacts: '**/target/*.jar', fingerprint: true
       }
     }
